@@ -1,0 +1,83 @@
+services:
+  nginx1:
+    image: nginx
+    ports:
+      - "8085:80"
+    volumes:
+      - ./nginx1:/etc/nginx/conf.d
+      - ./laravel1:/var/www
+    depends_on:
+      - laravel1
+      - db
+
+  nginx2:
+    image: nginx
+    ports:
+      - "8086:80"
+    volumes:
+      - ./nginx2:/etc/nginx/conf.d
+      - ./laravel2:/var/www
+    depends_on:
+      - laravel2
+      - db
+
+  laravel1:
+    build: 
+      dockerfile: Dockerfile
+    volumes:
+      - ./laravel1:/var/www
+    depends_on:
+      - db
+    ports:
+      - "9005:9000"
+
+  laravel2:
+    build: 
+      dockerfile: Dockerfile
+    volumes:
+      - ./laravel2:/var/www
+    depends_on:
+      - db
+    ports:
+      - "9006:9000"
+
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pwdroot
+      MYSQL_DATABASE: projet-docker
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pwduser
+    ports:
+      - "3376:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    
+  phpmyadmin:
+    image: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - 8082:80
+
+  mailserver: 
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025" 
+      - "8025:8025" 
+    volumes:
+      - mailhog_data:/data
+  
+  traefik:
+    image: traefik
+    command: --api.insecure=true --providers.docker
+    ports:
+      - 8083:8080
+      - 8084:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    
+volumes:
+  mysql_data:
+  mailhog_data:
