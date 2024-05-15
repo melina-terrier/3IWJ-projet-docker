@@ -27,8 +27,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /var/www
-RUN mkdir -p /var/www/storage
-RUN chmod -R 755 ./storage/logs/laravel.log
 
 EXPOSE 9000
 CMD ["php-fpm"]
