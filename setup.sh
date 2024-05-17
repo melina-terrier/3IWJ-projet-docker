@@ -5,6 +5,7 @@ ids=$(docker ps --format '{{.ID}}: {{.Names}}' | grep "laravel" | cut -d ':' -f 
 
 
 for id in $ids; do
+  docker exec $id composer update
   docker exec $id composer install
   docker exec $id npm install
   docker exec $id npm run build
